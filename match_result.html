@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Match Result | AI Resume Screening</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #243b53;
+        }
+
+        .navbar {
+            background: #102a43;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .page-container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        .header-card,
+        .score-card,
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e6edf3;
+        }
+
+        .header-card {
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .candidate-name {
+            font-size: 27px;
+            font-weight: 700;
+            color: #102a43;
+        }
+
+        .job-title {
+            color: #829ab1;
+        }
+
+        .score-card {
+            padding: 30px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .score {
+            font-size: 55px;
+            font-weight: 800;
+            color: #3182ce;
+        }
+
+        .score-label {
+            color: #829ab1;
+            font-size: 14px;
+        }
+
+        .sub-score-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid #e6edf3;
+        }
+
+        .sub-score {
+            font-size: 30px;
+            font-weight: 700;
+            color: #3182ce;
+        }
+
+        .recommendation-card {
+            border-radius: 15px;
+            padding: 22px;
+            background: #edf6ff;
+            border: 1px solid #d5eaff;
+        }
+
+        .recommendation-title {
+            font-weight: 700;
+            color: #2167a6;
+        }
+
+        .section-card {
+            padding: 25px;
+            height: 100%;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #102a43;
+            margin-bottom: 18px;
+        }
+
+        .skill {
+            display: inline-block;
+            padding: 7px 12px;
+            margin: 4px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .matched {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .missing {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .required {
+            background: #edf2f7;
+            color: #486581;
+        }
+
+        .keyword-matched {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        .keyword-missing {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .info-item {
+            color: #627d98;
+            margin-top: 8px;
+        }
+
+        .info-item i {
+            color: #3182ce;
+            margin-right: 7px;
+        }
+
+        .btn-back {
+            background: #102a43;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: #243b53;
+            color: white;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-dark">
+
+    <div class="container">
+
+        <span class="navbar-brand">
+
+            <i class="bi bi-file-earmark-text"></i>
+
+            AI Resume Screening System
+
+        </span>
+
+    </div>
+
+</nav>
+
+
+<div class="page-container">
+
+
+    <!-- CANDIDATE INFORMATION -->
+
+    <div class="header-card">
+
+        <div class="candidate-name">
+
+            {{ resume.name }}
+
+        </div>
+
+        <div class="job-title">
+
+            <i class="bi bi-briefcase"></i>
+
+            Applying for:
+            <strong>{{ job.title }}</strong>
+
+        </div>
+
+        <div class="info-item">
+
+            <i class="bi bi-envelope"></i>
+
+            {{ resume.email }}
+
+        </div>
+
+        <div class="info-item">
+
+            <i class="bi bi-telephone"></i>
+
+            {{ resume.phone }}
+
+        </div>
+
+    </div>
+
+
+    <!-- SCORE SECTION -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- OVERALL SCORE -->
+
+        <div class="col-md-4">
+
+            <div class="score-card">
+
+                <div class="score">
+
+                    {{ result.score }}%
+
+                </div>
+
+                <div class="score-label">
+
+                    Overall Compatibility
+
+                </div>
+
+
+                {% if result.score >= 75 %}
+
+                    <span class="badge bg-success mt-3">
+
+                        Strong Match
+
+                    </span>
+
+                {% elif result.score >= 50 %}
+
+                    <span class="badge bg-warning text-dark mt-3">
+
+                        Moderate Match
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-danger mt-3">
+
+                        Low Match
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- SUB SCORES -->
+
+        <div class="col-md-8">
+
+            <div class="row g-3 mb-3">
+
+                <div class="col-md-6">
+
+                    <div class="sub-score-card">
+
+                        <div class="sub-score">
+
+                            {{ result.skill_score }}%
+
+                        </div>
+
+                        <div class="score-label">
+
+                            Skill Match
+
+                        </div>
+
+                        <small class="text-muted">
+
+                            Weight: 70%
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="sub-score-card">
+
+                        <div class="sub-score">
+
+                            {{ result.keyword_score }}%
+
+                        </div>
+
+                        <div class="score-label">
+
+                            Keyword Match
+
+                        </div>
+
+                        <small class="text-muted">
+
+                            Weight: 30%
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECOMMENDATION -->
+
+            <div class="recommendation-card">
+
+                <div class="recommendation-title mb-2">
+
+                    <i class="bi bi-lightbulb"></i>
+
+                    AI Screening Recommendation
+
+                </div>
+
+                <p class="mb-0">
+
+                    {{ result.recommendation }}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SKILLS -->
+
+    <div class="row g-4">
+
+
+        <!-- MATCHED SKILLS -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <div class="section-title">
+
+                    <i class="bi bi-check-circle text-success"></i>
+
+                    Matched Skills
+
+                </div>
+
+
+                {% for skill in result.matched_skills %}
+
+                    <span class="skill matched">
+
+                        {{ skill }}
+
+                    </span>
+
+                {% empty %}
+
+                    <p class="text-muted">
+
+                        No matching skills found.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- MISSING SKILLS -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <div class="section-title">
+
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+
+                    Missing Skills
+
+                </div>
+
+
+                {% for skill in result.missing_skills %}
+
+                    <span class="skill missing">
+
+                        {{ skill }}
+
+                    </span>
+
+                {% empty %}
+
+                    <p class="text-success">
+
+                        No required skills are missing.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- KEYWORD ANALYSIS -->
+
+    <div class="row g-4 mt-1">
+
+
+        <!-- MATCHED KEYWORDS -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <div class="section-title">
+
+                    <i class="bi bi-search text-info"></i>
+
+                    Matched Keywords
+
+                </div>
+
+
+                {% for keyword in result.matched_keywords %}
+
+                    <span class="skill keyword-matched">
+
+                        {{ keyword }}
+
+                    </span>
+
+                {% empty %}
+
+                    <p class="text-muted">
+
+                        No important keywords matched.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- MISSING KEYWORDS -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <div class="section-title">
+
+                    <i class="bi bi-search text-warning"></i>
+
+                    Missing Keywords
+
+                </div>
+
+
+                {% for keyword in result.missing_keywords %}
+
+                    <span class="skill keyword-missing">
+
+                        {{ keyword }}
+
+                    </span>
+
+                {% empty %}
+
+                    <p class="text-success">
+
+                        No important keywords are missing.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- REQUIRED SKILLS -->
+
+    <div class="section-card mt-4">
+
+        <div class="section-title">
+
+            <i class="bi bi-list-check"></i>
+
+            Required Job Skills
+
+        </div>
+
+
+        {% for skill in result.required_skills %}
+
+            <span class="skill required">
+
+                {{ skill }}
+
+            </span>
+
+        {% empty %}
+
+            <p class="text-muted">
+
+                No specific skills detected in this job description.
+
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- SCORE EXPLANATION -->
+
+    <div class="section-card mt-4">
+
+        <div class="section-title">
+
+            <i class="bi bi-bar-chart"></i>
+
+            Compatibility Summary
+
+        </div>
+
+        <p class="mb-2">
+
+            The overall compatibility score combines:
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <strong>Skill Match — 70%</strong>:
+                compares the candidate's technical skills
+                with the required job skills.
+
+            </li>
+
+            <li>
+
+                <strong>Keyword Match — 30%</strong>:
+                compares important job-related keywords
+                with the candidate's extracted resume text.
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div class="text-center mt-4">
+
+        <a
+            href="{% url 'screening' %}"
+            class="btn-back">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Screening
+
+        </a>
+
+
+        <a
+            href="{% url 'resume_list' %}"
+            class="btn btn-outline-primary ms-2">
+
+            <i class="bi bi-file-earmark-person"></i>
+
+            View Resumes
+
+        </a>
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

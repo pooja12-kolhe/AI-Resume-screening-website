@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Uploaded Resumes | AI Resume Screening</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #f4f7fb;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #243b53;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 245px;
+            height: 100vh;
+            background: linear-gradient(
+                180deg,
+                #102a43,
+                #0b1f33
+            );
+            color: white;
+            z-index: 1000;
+        }
+
+        .brand {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            font-size: 19px;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: #3182ce;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .nav-menu {
+            padding: 20px 12px;
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #d9e2ec;
+            text-decoration: none;
+            padding: 13px 15px;
+            margin-bottom: 7px;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+        .nav-link-custom:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav-link-custom.active {
+            background: #3182ce;
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-link-custom i {
+            font-size: 18px;
+        }
+
+        /* =========================
+           MAIN CONTENT
+        ========================= */
+
+        .main-content {
+            margin-left: 245px;
+            min-height: 100vh;
+        }
+
+        /* TOP NAVBAR */
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e6edf3;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 35px;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e8f1fb;
+            color: #3182ce;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #243b53;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #829ab1;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page-container {
+            padding: 35px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #102a43;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: #829ab1;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-dashboard {
+            background: #102a43;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-dashboard:hover {
+            background: #243b53;
+            color: white;
+        }
+
+        .btn-upload {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-upload:hover {
+            background: #2b6cb0;
+            color: white;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #e6edf3;
+            margin-bottom: 25px;
+        }
+
+        .search-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #486581;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            height: 45px;
+            border: 1px solid #d9e2ec;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .search-input:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49,130,206,0.1);
+        }
+
+        .btn-search {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 0 22px;
+        }
+
+        .btn-clear {
+            background: #edf2f7;
+            color: #486581;
+            border: none;
+        }
+
+        /* =========================
+           RESUME CARD
+        ========================= */
+
+        .resume-card {
+            background: white;
+            border: 1px solid #e6edf3;
+            border-radius: 14px;
+            margin-bottom: 22px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+
+        .resume-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16,42,67,0.08);
+        }
+
+        .resume-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .candidate-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #e8f1fb;
+            color: #3182ce;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .candidate-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #102a43;
+            margin: 0;
+        }
+
+        .candidate-email {
+            font-size: 13px;
+            color: #829ab1;
+            margin-top: 3px;
+        }
+
+        .status-badge {
+            background: #e6fffa;
+            color: #168c72;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .resume-body {
+            padding: 22px 25px;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #627d98;
+            font-size: 13px;
+        }
+
+        .info-item i {
+            color: #3182ce;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #243b53;
+            margin-bottom: 10px;
+        }
+
+        .extracted-text {
+            background: #f8fafc;
+            border: 1px solid #e6edf3;
+            border-radius: 9px;
+            padding: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #486581;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        /* =========================
+           SKILLS
+        ========================= */
+
+        .skills-container {
+            margin-top: 18px;
+        }
+
+        .skill {
+            display: inline-block;
+            background: #edf6ff;
+            color: #2167a6;
+            border: 1px solid #d5eaff;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 3px;
+        }
+
+        .resume-footer {
+            background: #f8fafc;
+            border-top: 1px solid #edf2f7;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .uploaded-date {
+            color: #829ab1;
+            font-size: 12px;
+        }
+
+        .btn-view {
+            background: white;
+            color: #3182ce;
+            border: 1px solid #3182ce;
+            padding: 7px 14px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .btn-view:hover {
+            background: #3182ce;
+            color: white;
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty-card {
+            background: white;
+            border-radius: 14px;
+            padding: 60px 20px;
+            text-align: center;
+            border: 1px solid #e6edf3;
+        }
+
+        .empty-icon {
+            font-size: 50px;
+            color: #bcccdc;
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .brand span,
+            .nav-link-custom span {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .nav-link-custom {
+                justify-content: center;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .page-container {
+                padding: 20px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<div class="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+
+        <span>AI Resume Screening</span>
+
+    </div>
+
+    <div class="nav-menu">
+
+        <a href="{% url 'recruiter_dashboard' %}"
+           class="nav-link-custom">
+
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+
+        </a>
+
+        <a href="{% url 'upload_resume' %}"
+           class="nav-link-custom">
+
+            <i class="bi bi-cloud-upload"></i>
+            <span>Upload Resume</span>
+
+        </a>
+
+        <a href="{% url 'resume_list' %}"
+           class="nav-link-custom active">
+
+            <i class="bi bi-file-earmark-person"></i>
+            <span>Uploaded Resumes</span>
+
+        </a>
+
+        <a href="{% url 'screening' %}"
+           class="nav-link-custom">
+
+            <i class="bi bi-search"></i>
+            <span>Screening</span>
+
+        </a>
+
+        <a href="{% url 'create_job_description' %}"
+           class="nav-link-custom">
+
+            <i class="bi bi-briefcase"></i>
+            <span>Job Descriptions</span>
+
+        </a>
+
+        <a href="{% url 'login' %}"
+           class="nav-link-custom">
+
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<div class="main-content">
+
+    <!-- TOP BAR -->
+
+    <div class="topbar">
+
+        <div class="user-box">
+
+            <div class="user-icon">
+                <i class="bi bi-person"></i>
+            </div>
+
+            <div>
+                <div class="user-name">Puja</div>
+                <div class="user-role">Candidate</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PAGE -->
+
+    <div class="page-container">
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1 class="page-title">
+                    <i class="bi bi-file-earmark-person"></i>
+                    Uploaded Resumes
+                </h1>
+
+                <div class="page-subtitle">
+                    Manage and review candidate resumes
+                </div>
+
+            </div>
+
+
+            <div class="header-buttons">
+
+                <a href="{% url 'recruiter_dashboard' %}"
+                   class="btn-dashboard">
+
+                    <i class="bi bi-speedometer2"></i>
+                    Recruiter Dashboard
+
+                </a>
+
+                <a href="{% url 'upload_resume' %}"
+                   class="btn-upload">
+
+                    <i class="bi bi-cloud-upload"></i>
+                    Upload Resume
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-card">
+
+            <div class="search-title">
+                <i class="bi bi-search"></i>
+                Search Candidates
+            </div>
+
+            <form method="GET">
+
+                <div class="input-group">
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ query }}"
+                        class="form-control search-input"
+                        placeholder="Search by candidate name, email or skill..."
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-search">
+
+                        <i class="bi bi-search"></i>
+                        Search
+
+                    </button>
+
+                    <a
+                        href="{% url 'resume_list' %}"
+                        class="btn btn-clear d-flex align-items-center">
+
+                        Clear
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESUMES -->
+
+        {% for resume in resumes %}
+
+        <div class="resume-card">
+
+            <!-- HEADER -->
+
+            <div class="resume-header">
+
+                <div class="candidate-info">
+
+                    <div class="candidate-avatar">
+
+                        {{ resume.name|first|upper }}
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="candidate-name">
+                            {{ resume.name }}
+                        </h2>
+
+                        <div class="candidate-email">
+
+                            <i class="bi bi-envelope"></i>
+                            {{ resume.email }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="status-badge">
+
+                    <i class="bi bi-check-circle"></i>
+                    Resume Extracted
+
+                </div>
+
+            </div>
+
+
+            <!-- BODY -->
+
+            <div class="resume-body">
+
+                <div class="info-row">
+
+                    <div class="info-item">
+
+                        <i class="bi bi-envelope"></i>
+
+                        {{ resume.email }}
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <i class="bi bi-telephone"></i>
+
+                        {{ resume.phone }}
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        Uploaded:
+                        {{ resume.uploaded_at|date:"M d, Y, h:i A" }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- EXTRACTED TEXT -->
+
+                <div>
+
+                    <div class="section-title">
+
+                        <i class="bi bi-file-text"></i>
+                        Extracted Resume Text
+
+                    </div>
+
+                    <div class="extracted-text">
+
+                        {{ resume.extracted_text }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- SKILLS -->
+
+                {% if resume.skills %}
+
+                <div class="skills-container">
+
+                    <div class="section-title">
+
+                        <i class="bi bi-stars"></i>
+                        Detected Skills
+
+                    </div>
+
+                    {% for skill in resume.skills.split %}
+
+                        <span class="skill">
+                            {{ skill }}
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div class="resume-footer">
+
+                <div class="uploaded-date">
+
+                    <i class="bi bi-clock"></i>
+
+                    Resume uploaded
+                    {{ resume.uploaded_at|timesince }}
+                    ago
+
+                </div>
+
+                <div>
+
+                   <a
+    href="{% url 'view_resume' resume.id %}"
+    target="_blank"
+    class="btn btn-primary"
+>
+    View Resume
+</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="empty-card">
+
+            <div class="empty-icon">
+
+                <i class="bi bi-file-earmark-x"></i>
+
+            </div>
+
+            <h4>No Resumes Found</h4>
+
+            <p class="text-muted">
+
+                {% if query %}
+
+                    No resumes matched
+                    "<strong>{{ query }}</strong>".
+
+                {% else %}
+
+                    No resumes have been uploaded yet.
+
+                {% endif %}
+
+            </p>
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="btn btn-primary">
+
+                <i class="bi bi-cloud-upload"></i>
+                Upload Resume
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Screening</title>
+</head>
+
+<body>
+
+    <h1>AI Resume Screening</h1>
+    <a href="{% url 'recruiter_dashboard' %}"
+   class="btn btn-dark">
+    📊 Recruiter Dashboard
+</a>
+
+<hr>
+    <hr>
+
+    <h2>Select Job</h2>
+
+    <select id="job">
+        <option value="">-- Select Job --</option>
+
+        {% for job in jobs %}
+            <option value="{{ job.id }}">
+                {{ job.title }}
+            </option>
+        {% empty %}
+            <option value="">No jobs available</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <h2>Select Resume</h2>
+
+    <select id="resume">
+        <option value="">-- Select Resume --</option>
+
+        {% for resume in resumes %}
+            <option value="{{ resume.id }}">
+                {{ resume.name }}
+            </option>
+        {% empty %}
+            <option value="">No resumes available</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+   <button onclick="checkMatch()" class="btn btn-primary">
+    Check Match
+</button>
+
+<button onclick="rankCandidates()" class="btn btn-success">
+    Rank All Candidates
+</button>
+
+    <script>
+
+function checkMatch() {
+
+    const jobId = document.getElementById("job").value;
+    const resumeId = document.getElementById("resume").value;
+
+    if (!jobId || !resumeId) {
+        alert("Please select both a job and a resume.");
+        return;
+    }
+
+    window.location.href =
+        `/resumes/match/${jobId}/${resumeId}/`;
+}
+
+
+function rankCandidates() {
+
+    const jobId = document.getElementById("job").value;
+
+    if (!jobId) {
+        alert("Please select a job first.");
+        return;
+    }
+
+    window.location.href =
+        `/resumes/ranking/${jobId}/`;
+}
+
+</script>
+
+</body>
+</html>

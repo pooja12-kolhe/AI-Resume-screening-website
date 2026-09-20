@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Uploaded Successfully</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 500px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #28a745;
+        }
+
+        p {
+            color: #555;
+            margin: 20px 0;
+        }
+
+        a {
+            display: inline-block;
+            margin: 8px;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Resume Uploaded Successfully! 🎉</h1>
+
+    <p>
+        Your resume has been uploaded successfully.
+    </p>
+
+    <a href="{% url 'upload_resume' %}">
+        Upload Another Resume
+    </a>
+
+    <a href="{% url 'resume_list' %}">
+        View Uploaded Resumes
+    </a>
+
+</div>
+
+</body>
+</html>

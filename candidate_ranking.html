@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Ranking - AI Resume Screening</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        body {
+            background-color: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .ranking-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .filter-card {
+            border-radius: 15px;
+        }
+
+        .rank {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .skill {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .matched {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .missing {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+        }
+
+        .table th {
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .top-header {
+            background: linear-gradient(135deg, #212529, #343a40);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .job-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #ffffff;
+            color: #212529;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .empty-message {
+            padding: 40px;
+        }
+
+        .filter-title {
+            font-weight: 600;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<!-- ========================= -->
+<!-- NAVBAR -->
+<!-- ========================= -->
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+
+    <div class="container">
+
+        <a
+            href="{% url 'recruiter_dashboard' %}"
+            class="navbar-brand"
+        >
+
+            <i class="bi bi-robot"></i>
+
+            AI Resume Screening System
+
+        </a>
+
+        <a
+            href="{% url 'recruiter_dashboard' %}"
+            class="btn btn-outline-light btn-sm"
+        >
+
+            <i class="bi bi-speedometer2"></i>
+
+            Dashboard
+
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ========================= -->
+<!-- MAIN CONTENT -->
+<!-- ========================= -->
+
+<div class="container py-5">
+
+
+    <!-- ========================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================= -->
+
+    <div class="top-header text-center mb-4">
+
+        <h1 class="page-title text-white">
+
+            <i class="bi bi-bar-chart-fill"></i>
+
+            Candidate Ranking
+
+        </h1>
+
+        <p class="mb-2">
+
+            Candidates ranked according to their compatibility
+            with the selected job.
+
+        </p>
+
+        <div class="job-badge">
+
+            <i class="bi bi-briefcase-fill"></i>
+
+            Job: {{ job.title }}
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- SEARCH & FILTER -->
+    <!-- ========================= -->
+
+    <div class="card filter-card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h5 class="filter-title mb-3">
+
+                <i class="bi bi-funnel-fill"></i>
+
+                Search & Filter Candidates
+
+            </h5>
+
+
+            <form method="GET">
+
+                <div class="row g-3 align-items-end">
+
+
+                    <!-- SEARCH -->
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+
+                            Search Candidate
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ query }}"
+                            class="form-control"
+                            placeholder="Search by name, email or skill..."
+                        >
+
+                    </div>
+
+
+                    <!-- MINIMUM SCORE -->
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Minimum Match Score
+
+                        </label>
+
+                        <select
+                            name="min_score"
+                            class="form-select"
+                        >
+
+                            <option value="">
+
+                                All Candidates
+
+                            </option>
+
+
+                            <option
+                                value="75"
+                                {% if min_score == "75" %}selected{% endif %}
+                            >
+
+                                75% and above
+
+                            </option>
+
+
+                            <option
+                                value="60"
+                                {% if min_score == "60" %}selected{% endif %}
+                            >
+
+                                60% and above
+
+                            </option>
+
+
+                            <option
+                                value="50"
+                                {% if min_score == "50" %}selected{% endif %}
+                            >
+
+                                50% and above
+
+                            </option>
+
+
+                            <option
+                                value="25"
+                                {% if min_score == "25" %}selected{% endif %}
+                            >
+
+                                25% and above
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="col-md-3">
+
+                        <div class="d-flex gap-2">
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100"
+                            >
+
+                                <i class="bi bi-funnel"></i>
+
+                                Filter
+
+                            </button>
+
+
+                            <a
+                                href="{% url 'candidate_ranking' job.id %}"
+                                class="btn btn-outline-secondary"
+                            >
+
+                                <i class="bi bi-x-circle"></i>
+
+                                Clear
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- RANKING TABLE -->
+    <!-- ========================= -->
+
+    <div class="card ranking-card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>
+                                Rank
+                            </th>
+
+                            <th>
+                                Candidate
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Match Score
+                            </th>
+
+                            <th>
+                                Matched Skills
+                            </th>
+
+                            <th>
+                                Missing Skills
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for candidate in ranked_candidates %}
+
+                        <tr>
+
+
+                            <!-- RANK -->
+                            <td>
+
+                                <span class="rank">
+
+                                    {{ forloop.counter }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- CANDIDATE -->
+                            <td>
+
+                                <span class="candidate-name">
+
+                                    {{ candidate.resume.name }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- EMAIL -->
+                            <td>
+
+                                {% if candidate.resume.email %}
+
+                                    {{ candidate.resume.email }}
+
+                                {% else %}
+
+                                    <span class="text-muted">
+
+                                        Not provided
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- SCORE -->
+                            <td>
+
+                                <span
+                                    class="score
+                                    {% if candidate.score >= 75 %}
+                                        text-success
+                                    {% elif candidate.score >= 50 %}
+                                        text-warning
+                                    {% else %}
+                                        text-danger
+                                    {% endif %}"
+                                >
+
+                                    {{ candidate.score }}%
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- MATCHED SKILLS -->
+                            <td>
+
+                                {% for skill in candidate.matched_skills %}
+
+                                    <span class="skill matched">
+
+                                        <i class="bi bi-check-circle-fill"></i>
+
+                                        {{ skill }}
+
+                                    </span>
+
+                                {% empty %}
+
+                                    <span class="text-muted">
+
+                                        No matched skills
+
+                                    </span>
+
+                                {% endfor %}
+
+                            </td>
+
+
+                            <!-- MISSING SKILLS -->
+                            <td>
+
+                                {% for skill in candidate.missing_skills %}
+
+                                    <span class="skill missing">
+
+                                        <i class="bi bi-x-circle-fill"></i>
+
+                                        {{ skill }}
+
+                                    </span>
+
+                                {% empty %}
+
+                                    <span class="text-success">
+
+                                        <i class="bi bi-check-circle-fill"></i>
+
+                                        No missing skills
+
+                                    </span>
+
+                                {% endfor %}
+
+                            </td>
+
+
+                            <!-- ACTION -->
+                            <td>
+
+                                <a
+                                    href="{% url 'match_resume' job.id candidate.resume.id %}"
+                                    class="btn btn-sm btn-primary"
+                                >
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                    View Result
+
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+                        {% empty %}
+
+
+                        <!-- NO RESULTS -->
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center empty-message"
+                            >
+
+                                <i
+                                    class="bi bi-search"
+                                    style="font-size: 40px;"
+                                ></i>
+
+                                <h5 class="mt-3">
+
+                                    No candidates found
+
+                                </h5>
+
+                                <p class="text-muted">
+
+                                    Try changing the search text
+                                    or minimum match score.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- BOTTOM BUTTONS -->
+    <!-- ========================= -->
+
+    <div class="text-center mt-4">
+
+
+        <a
+            href="{% url 'screening' %}"
+            class="btn btn-outline-secondary me-2"
+        >
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Screening
+
+        </a>
+
+
+        <a
+            href="{% url 'recruiter_dashboard' %}"
+            class="btn btn-dark"
+        >
+
+            <i class="bi bi-speedometer2"></i>
+
+            Dashboard
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================= -->
+<!-- BOOTSTRAP JS -->
+<!-- ========================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+</body>
+
+</html>
